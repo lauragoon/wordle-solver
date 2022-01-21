@@ -56,7 +56,7 @@ def type_keyboard(keyboard_rows_tiles, click_key):
     key_map = {"q":(0,0), "w":(0,1), "e":(0,2), "r":(0,3), "t":(0,4), "y":(0,5), "u":(0,6), "i":(0,7), "o":(0,8), "p":(0,9),
                "a":(1,0), "s":(1,1), "d":(1,2), "f":(1,3), "g":(1,4), "h":(1,5), "j":(1,6), "k":(1,7), "l":(1,8),
                "z":(2,1), "x":(2,2), "c":(2,3), "v":(2,4), "b":(2,5), "n":(2,6), "m":(2,7),
-               "ENTER":(2,0)}
+               "ENTER":(2,0), "BACKSPACE":(2,8)}
 
     keyboard_location = key_map[click_key]
     keyboard_rows_tiles[keyboard_location[0]][keyboard_location[1]].click()
