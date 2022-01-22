@@ -1,9 +1,14 @@
+from msilib import type_key
 from english_words import english_words_lower_alpha_set
 import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.service import Service
+
+KEYBOARD_ROWS_TILES = list()
+
+# TODO: case where "word is not in list"
 
 # Keep a set of only 5-letter-ed words
 def gen_words():
@@ -37,7 +42,7 @@ def map_word_scores(curr_words):
 
 # Get word with highest score with given conditions
 # TODO: more efficient on yellow chrs
-def next_word(word_scores, yellow_chrs=set()):
+def next_word(word_scores, try_num, yellow_chrs=set()):
     found_word = False
     ret_word = ""
 
@@ -52,28 +57,30 @@ def next_word(word_scores, yellow_chrs=set()):
     return ret_word
 
 # Type on webpage keyboard
-def type_keyboard(keyboard_rows_tiles, click_key):
+def type_keyboard(click_key):
     key_map = {"q":(0,0), "w":(0,1), "e":(0,2), "r":(0,3), "t":(0,4), "y":(0,5), "u":(0,6), "i":(0,7), "o":(0,8), "p":(0,9),
                "a":(1,0), "s":(1,1), "d":(1,2), "f":(1,3), "g":(1,4), "h":(1,5), "j":(1,6), "k":(1,7), "l":(1,8),
                "z":(2,1), "x":(2,2), "c":(2,3), "v":(2,4), "b":(2,5), "n":(2,6), "m":(2,7),
                "ENTER":(2,0), "BACKSPACE":(2,8)}
 
     keyboard_location = key_map[click_key]
-    keyboard_rows_tiles[keyboard_location[0]][keyboard_location[1]].click()
+    KEYBOARD_ROWS_TILES[keyboard_location[0]][keyboard_location[1]].click()
 
-# Interact with webpage
-def interact_site(first_word):
-    s = Service(r'C:\Users\goonl\geckodriver-v0.30.0-win64\geckodriver.exe')
-    driver = webdriver.Firefox(service=s)
-    driver.get("https://www.powerlanguage.co.uk/wordle/")
+# Type word on keyboard
+def type_word(wrd):
+    chrs = list(wrd)
+    
+    for chr in chrs:
+        type_keyboard(chr)
 
-    # close instruction pop-up
+    type_keyboard("ENTER")
+
+# Keep track of global variables used to interact with webpage
+def gen_site_globals(driver):
     game_app = driver.find_element(By.TAG_NAME, "game-app")
-    game_app.click()
-
     game_theme_manager = driver.execute_script('return arguments[0].shadowRoot.children', game_app)[1]
 
-    # type
+    # site keyboard
     keyboard_container = game_theme_manager.find_element(By.ID, "game").find_element(By.TAG_NAME, "game-keyboard")
     keyboard = driver.execute_script('return arguments[0].shadowRoot.children', keyboard_container)[1]
     keyboard_rows = keyboard.find_elements(By.CLASS_NAME, "row")
@@ -84,16 +91,25 @@ def interact_site(first_word):
         curr_keyboard_row = keyboard_rows[i]
         curr_keyboard_tiles = curr_keyboard_row.find_elements(By.TAG_NAME, "button")
         keyboard_rows_tiles.append(curr_keyboard_tiles)
+        
+    global KEYBOARD_ROWS_TILES
+    KEYBOARD_ROWS_TILES = keyboard_rows_tiles
 
-    type_keyboard(keyboard_rows_tiles, first_word[0])
-    type_keyboard(keyboard_rows_tiles, first_word[1])
-    type_keyboard(keyboard_rows_tiles, first_word[2])
-    type_keyboard(keyboard_rows_tiles, first_word[3])
-    type_keyboard(keyboard_rows_tiles, first_word[4])
-    type_keyboard(keyboard_rows_tiles, "ENTER")
+# Connect with webpage
+def connect_site():
+    s = Service(r'C:\Users\goonl\geckodriver-v0.30.0-win64\geckodriver.exe')
+    driver = webdriver.Firefox(service=s)
+    driver.get("https://www.powerlanguage.co.uk/wordle/")
 
-    # TODO: case where "word is not in list"
+    gen_site_globals(driver)
 
+    # close instruction pop-up
+    game_app = driver.find_element(By.TAG_NAME, "game-app")
+    game_app.click()
+
+# Determine if game has been won
+def game_won():
+    pass
 
 # Run helper functions in order
 def run_script():
@@ -101,9 +117,14 @@ def run_script():
     # pre-game prep
     curr_words = gen_words()
     word_scores = map_word_scores(curr_words)
+    connect_site()
     
     # game
-    first_word = next_word(word_scores)
-    interact_site(first_word)
+    for i in range(1): # 6 tries
+        now_word = next_word(word_scores, i)
+        type_word(now_word)
+
+        if game_won():
+            break
 
 run_script()
