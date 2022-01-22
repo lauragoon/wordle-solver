@@ -14,7 +14,6 @@ def gen_words():
     return set(filter(lambda wrd: len(wrd) == 5 and str.isalpha(wrd), english_words_lower_alpha_set))
 
 # Score words based on frequency of letter appearances
-# TODO: de-prioritize words with double letters for first word?
 def map_word_scores(curr_words):
     alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
@@ -36,7 +35,6 @@ def map_word_scores(curr_words):
         for chr in wrd_split:
             word_scores[wrd] += letter_score[chr]
 
-    # set to global for future reference
     return word_scores
 
 # Get word with highest score with given conditions
@@ -45,13 +43,21 @@ def next_word(word_scores, feedback_regex, yellows):
     ret_word = ""
 
     while not found_word:
+
+        # get next highest scoring word
         curr_word = max(word_scores.items(), key=lambda tup: tup[1])[0]
+
+        # check if word matches against regex from past feedback
+        # also checks if word contains the yellow characters; yellow chars are filtered out of their original index position via the regex
         if bool(re.match(feedback_regex, curr_word)) and len(set(curr_word).intersection(yellows)) == len(yellows):
             ret_word = curr_word
             found_word = True
+
+        # words that don't pass the check don't need to stay in word list anymore
         else:
             del word_scores[curr_word]
 
+    # delete currently guessed word so we don't guess it again
     del word_scores[ret_word]
 
     return ret_word
@@ -111,7 +117,7 @@ def gen_site_globals():
 
 # Connect with webpage
 def connect_site():
-    s = Service(r'C:\Users\goonl\geckodriver-v0.30.0-win64\geckodriver.exe')
+    s = Service(r'geckodriver.exe')
     driver = webdriver.Firefox(service=s)
     driver.get("https://www.powerlanguage.co.uk/wordle/")
 
@@ -121,7 +127,7 @@ def connect_site():
     gen_site_globals()
 
     # close instruction pop-up
-    time.sleep(1)
+    time.sleep(1) # delay
     game_app = driver.find_element(By.TAG_NAME, "game-app")
     game_app.click()
 
@@ -183,7 +189,7 @@ def gen_regex(greens, yellows, greys):
     # fill in rest
     for i in range(5):
 
-        # not found correct letter for this idx
+        # not found correct letter for this idx yet
         if len(ret_regex[i]) == 0:
 
             dont_include = set()
@@ -201,7 +207,7 @@ def gen_regex(greens, yellows, greys):
 
     return "".join(ret_regex)
 
-# Update ds for greens/corrects
+# Update data structure for greens/corrects
 def update_greens(greens, green_feedback):
     for itm in green_feedback.items():
         idx = itm[0]
@@ -212,7 +218,7 @@ def update_greens(greens, green_feedback):
 
     return greens
 
-# Update ds for yellows/presents
+# Update data structure for yellows/presents
 def update_yellows(yellows, yellow_feedback):
     for itm in yellow_feedback.items():
         idx = itm[0]
@@ -247,7 +253,7 @@ def run_script():
         now_word = next_word(word_scores, feedback_regex, set().union(*yellow_chrs))
         type_word(now_word)
 
-        time.sleep(2)
+        time.sleep(1.7) # delay so row is updated with feedback before we check
 
         # won the game
         if game_won(try_num):
