@@ -1,6 +1,8 @@
 # Wordle Solver
 Script that can *theoretically* solve a game of Wordle. Uses statistical letter frequency and previous rows' colored tiles to grab words from english-words-py library.
 
+A zip folder containing the geckodriver dependency & executable script can be found under Releases.
+
 ## Running the script
 When the script is run, a Firefox browser session is launched and pointed towards https://www.powerlanguage.co.uk/wordle/.
 
@@ -24,8 +26,15 @@ This goes on until 6 tries have passed or if the word has been guessed.
 
 ## Choosing the right word
 The current scoring system prioritizes the frequency of letters within the word. The more frequent the letter appears in the library, the higher score it gets. The score of a word is merely the sum of the scores of its letter.
+
+After words are scored and ranked based on the aforementioned system, words are chosen only if they fit a specific pattern. At the start of the game, the pattern is merely 5 letters from a-z. However, as we gain more knowledge from each guess, the pattern changes accordingly.
+- When a letter is found in the correct spot, subsequent guesses will always include words where that letter is in the same spot
+- When a letter is found in the incorrect spot, subsequent guesses only includes words that have that letter in a different position
+- When a letter is found to not be in any spot, subsequent guesses will never include that letter
+
 (to be improved on)
 
 ## Dependencies
 - [geckodriver](https://github.com/mozilla/geckodriver/releases)
+- FireFox (browser)
 - packages in requirements.txt
