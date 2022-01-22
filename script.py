@@ -56,6 +56,8 @@ def next_word(word_scores, try_num, yellow_chrs=set()):
         else:
             del word_scores[curr_word]
 
+    del word_scores[ret_word]
+
     return ret_word
 
 # Type on webpage keyboard
