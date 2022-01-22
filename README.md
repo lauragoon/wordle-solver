@@ -1,7 +1,7 @@
 # Wordle Solver
 Script that can *theoretically* solve a game of Wordle. Uses statistical letter frequency and previous rows' colored tiles to grab words from english-words-py library.
 
-A zip folder containing the geckodriver dependency & executable script can be found under Releases.
+A zip folder containing the geckodriver dependency & executable script can be found under [Releases](https://github.com/lauragoon/wordle-solver/releases).
 
 ## Running the script
 When the script is run, a Firefox browser session is launched and pointed towards https://www.powerlanguage.co.uk/wordle/.
