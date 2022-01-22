@@ -32,7 +32,7 @@ After words are scored and ranked based on the aforementioned system, words are 
 - When a letter is found in the incorrect spot, subsequent guesses only includes words that have that letter in a different position
 - When a letter is found to not be in any spot, subsequent guesses will never include that letter
 
-(to be improved on)
+(open to criticism for improvements)
 
 ## Dependencies
 - [geckodriver](https://github.com/mozilla/geckodriver/releases)
