@@ -11,8 +11,6 @@ DRIVER = None
 KEYBOARD_ROWS_TILES = list()
 BOARD_ROWS_TILES = list()
 
-# TODO: case where "word is not in list"
-
 # Keep a set of only 5-letter-ed words
 def gen_words():
     return set(filter(lambda wrd: len(wrd) == 5 and str.isalpha(wrd), english_words_lower_alpha_set))
@@ -44,7 +42,6 @@ def map_word_scores(curr_words):
     return word_scores
 
 # Get word with highest score with given conditions
-# TODO: more efficient on yellow chrs
 def next_word(word_scores, feedback_regex, yellows):
     found_word = False
     ret_word = ""
