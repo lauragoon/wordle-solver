@@ -8,7 +8,7 @@ When the script is run, a Firefox browser session is launched and pointed toward
 <img src="https://user-images.githubusercontent.com/20371135/150624507-77749858-6486-4004-b3c5-b9a133ccfdde.png" alt="drawing" width="60%"/>
 
 
-The script proceeds to start the game by choosing words from an English words library. Words are prioritized based on a scoring system. The current scoring system prioritizes the frequency of letters within the word. The more frequent the letter appears in the library, the higher score it gets. The score of a word is merely the sum of the scores of its letter.
+The script proceeds to start the game by choosing words from an English words library. Words are prioritized based on a scoring system explained in [Choosing the right word](#choosing-the-right-word)
 
 
 <img src="https://user-images.githubusercontent.com/20371135/150624726-79a00994-25f5-4b48-a425-765d738f8f2a.png" alt="drawing" width="60%"/>
@@ -21,6 +21,10 @@ This goes on until 6 tries have passed or if the word has been guessed.
 
 
 <img src="https://user-images.githubusercontent.com/20371135/150624810-f41a9ae1-ebd7-4a51-9a0a-440872d9a6c4.png" alt="drawing" width="60%"/>
+
+## Choosing the right word
+The current scoring system prioritizes the frequency of letters within the word. The more frequent the letter appears in the library, the higher score it gets. The score of a word is merely the sum of the scores of its letter.
+(to be improved on)
 
 ## Dependencies
 - [geckodriver](https://github.com/mozilla/geckodriver/releases)
