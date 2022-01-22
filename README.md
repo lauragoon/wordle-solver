@@ -25,7 +25,7 @@ This goes on until 6 tries have passed or if the word has been guessed.
 <img src="https://user-images.githubusercontent.com/20371135/150624810-f41a9ae1-ebd7-4a51-9a0a-440872d9a6c4.png" alt="drawing" width="60%"/>
 
 ## Choosing the right word
-The current scoring system prioritizes the frequency of letters within the word. The more frequent the letter appears in the library, the higher score it gets. The score of a word is merely the sum of the scores of its letter.
+The current scoring system prioritizes the frequency of letters within the word. The more frequent the letter appears in the library, the higher score it gets. The score of a word is merely the sum of the scores of its letter. This strategy was chosen so even if the guessed word was wrong, we can gain more information through whether or not its letters belong in the target word. We will either eliminate many words that the "common" letters appear in, or experience a higher probability of 1+ letters to be in the target word due to how "common" the letters are.
 
 After words are scored and ranked based on the aforementioned system, words are chosen only if they fit a specific pattern. At the start of the game, the pattern is merely 5 letters from a-z. However, as we gain more knowledge from each guess, the pattern changes accordingly.
 - When a letter is found in the correct spot, subsequent guesses will always include words where that letter is in the same spot
