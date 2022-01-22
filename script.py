@@ -128,7 +128,15 @@ def connect_site():
 
 # Determine if game has been won
 def game_won(try_num):
-    pass
+    recent_board_row = BOARD_ROWS_TILES[try_num-1]
+    last_tile = recent_board_row[-1]
+    last_tile_div = DRIVER.execute_script('return arguments[0].shadowRoot.children', last_tile)[1]
+    correct_so_far = True
+
+    for i in range(5):
+        correct_so_far = correct_so_far and last_tile_div.get_attribute("data-state") == "correct"
+
+    return correct_so_far
 
 # Checker for when word is not in list
 def word_not_in_list(try_num):
@@ -154,15 +162,19 @@ def run_script():
         now_word = next_word(word_scores, try_num)
         type_word(now_word)
 
-        if not word_not_in_list(try_num):
-            try_num += 1
+        # won the game
+        if game_won(try_num):
+            has_game_finished = True
+        
+        # need to continue the game
         else:
-            for i in range(5): # delete last word
-                type_keyboard("BACKSPACE")
+            if not word_not_in_list(try_num):
+                try_num += 1
+            else:
+                for i in range(5): # delete last word
+                    type_keyboard("BACKSPACE")
 
-        if game_won():
-            has_game_finished = True
-        elif try_num == 7: # finished try 7
-            has_game_finished = True
+            if try_num == 7: # finished try 6
+                has_game_finished = True
 
 run_script()
