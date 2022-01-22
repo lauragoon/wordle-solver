@@ -6,7 +6,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.service import Service
 
+DRIVER = None
 KEYBOARD_ROWS_TILES = list()
+BOARD_ROWS_TILES = list()
 
 # TODO: case where "word is not in list"
 
@@ -76,13 +78,13 @@ def type_word(wrd):
     type_keyboard("ENTER")
 
 # Keep track of global variables used to interact with webpage
-def gen_site_globals(driver):
-    game_app = driver.find_element(By.TAG_NAME, "game-app")
-    game_theme_manager = driver.execute_script('return arguments[0].shadowRoot.children', game_app)[1]
+def gen_site_globals():
+    game_app = DRIVER.find_element(By.TAG_NAME, "game-app")
+    game_theme_manager = DRIVER.execute_script('return arguments[0].shadowRoot.children', game_app)[1]
 
     # site keyboard
     keyboard_container = game_theme_manager.find_element(By.ID, "game").find_element(By.TAG_NAME, "game-keyboard")
-    keyboard = driver.execute_script('return arguments[0].shadowRoot.children', keyboard_container)[1]
+    keyboard = DRIVER.execute_script('return arguments[0].shadowRoot.children', keyboard_container)[1]
     keyboard_rows = keyboard.find_elements(By.CLASS_NAME, "row")
 
     keyboard_rows_tiles = []
@@ -95,21 +97,46 @@ def gen_site_globals(driver):
     global KEYBOARD_ROWS_TILES
     KEYBOARD_ROWS_TILES = keyboard_rows_tiles
 
+    # input board tiles
+    board = game_theme_manager.find_element(By.ID, "game").find_element(By.ID, "board-container").find_element(By.ID, "board")
+    board_rows = board.find_elements(By.TAG_NAME, "game-row")
+
+    board_rows_tiles = []
+
+    for i in range(6):
+        curr_board_row = board_rows[i]
+        curr_board_tiles = DRIVER.execute_script('return arguments[0].shadowRoot.children', curr_board_row)[1].find_elements(By.TAG_NAME, "game-tile")
+        board_rows_tiles.append(curr_board_tiles)
+
+    global BOARD_ROWS_TILES
+    BOARD_ROWS_TILES = board_rows_tiles
+
 # Connect with webpage
 def connect_site():
     s = Service(r'C:\Users\goonl\geckodriver-v0.30.0-win64\geckodriver.exe')
     driver = webdriver.Firefox(service=s)
     driver.get("https://www.powerlanguage.co.uk/wordle/")
 
-    gen_site_globals(driver)
+    global DRIVER
+    DRIVER = driver
+
+    gen_site_globals()
 
     # close instruction pop-up
     game_app = driver.find_element(By.TAG_NAME, "game-app")
     game_app.click()
 
 # Determine if game has been won
-def game_won():
+def game_won(try_num):
     pass
+
+# Checker for when word is not in list
+def word_not_in_list(try_num):
+    recent_board_row = BOARD_ROWS_TILES[try_num-1]
+    last_tile = recent_board_row[-1]
+    last_tile_div = DRIVER.execute_script('return arguments[0].shadowRoot.children', last_tile)[1]
+
+    return last_tile_div.get_attribute("data-state") == "tbd"
 
 # Run helper functions in order
 def run_script():
@@ -120,11 +147,22 @@ def run_script():
     connect_site()
     
     # game
-    for i in range(1): # 6 tries
-        now_word = next_word(word_scores, i)
+    has_game_finished = False
+    try_num = 1
+
+    while not has_game_finished: # 6 tries
+        now_word = next_word(word_scores, try_num)
         type_word(now_word)
 
+        if not word_not_in_list(try_num):
+            try_num += 1
+        else:
+            for i in range(5): # delete last word
+                type_keyboard("BACKSPACE")
+
         if game_won():
-            break
+            has_game_finished = True
+        elif try_num == 7: # finished try 7
+            has_game_finished = True
 
 run_script()
