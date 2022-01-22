@@ -37,4 +37,3 @@ After words are scored and ranked based on the aforementioned system, words are 
 ## Dependencies
 - [geckodriver](https://github.com/mozilla/geckodriver/releases)
 - FireFox (browser)
-- packages in requirements.txt
