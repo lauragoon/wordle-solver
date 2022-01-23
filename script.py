@@ -192,7 +192,7 @@ def connect_site():
     gen_site_globals()
 
     # close instruction pop-up
-    time.sleep(1) # delay
+    time.sleep(0.6) # delay
     game_app = driver.find_element(By.TAG_NAME, "game-app")
     game = DRIVER.execute_script('return arguments[0].shadowRoot.children', game_app)[1].find_element(By.ID, "game")
     game.click()
@@ -327,7 +327,7 @@ def run_script(refine_word_list=False):
             now_word = next_word(word_scores, feedback_regex, set().union(*yellow_chrs))
         type_word(now_word)
 
-        time.sleep(1.7) # delay so row is updated with feedback before we check
+        time.sleep(1.1) # delay so row is updated with feedback before we check
 
         # won the game
         if game_won(try_num):
