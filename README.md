@@ -1,7 +1,7 @@
 # Wordle Solver
 Script that can *theoretically* solve a game of Wordle. Uses statistical letter frequency and previous rows' colored tiles to grab words from english-words-py library.
 
-A zip folder containing the browser dependencies (v1.1) & executable script can be found under [Releases](https://github.com/lauragoon/wordle-solver/releases).
+A zip folder containing the browser dependencies & executable script can be found under [Releases](https://github.com/lauragoon/wordle-solver/releases).
 
 ## Running the script
 ### What happens
@@ -25,7 +25,7 @@ This goes on until 6 tries have passed or if the word has been guessed.
 
 <img src="https://user-images.githubusercontent.com/20371135/150624810-f41a9ae1-ebd7-4a51-9a0a-440872d9a6c4.png" alt="drawing" width="60%"/>
 
-### Improving on script's word bank (v1.1)
+### Improving on script's word bank
 This script uses words from the english-words-py library, which does seems to include more words than what are counted as valid words in Wordle's word list. These words are stored in "non_words_list.txt". When generating the word bank and selecting starter words, the script will compare against words in this file (if this file exists) and remove any words that are included in this file. This text file is expected to be 5-letter words, one word per line.
 
 While there is a short file included as an example, there is an option to iteratively add words onto this list. If this option is triggered:
@@ -33,7 +33,7 @@ While there is a short file included as an example, there is an option to iterat
 - Whenever a word is found to not be in the Wordle list, that word will be written on a new line in "non_words_list.txt"
   - In the rare case words are duplicated in this file, it does not matter whether or not the user manually deletes the duplicates
 
-## Choosing the right word (~v1.1)
+## Choosing the right word
 This script accepts a text file "starters.txt" of user-input starter words to use in its game. (If "starters.txt" does not exist, then the script will use the default starter word "stare".) This text file is expected to be 5-letter words, one word per line.
 - If multiple starter words are in the text file, the script will choose one at random
 - If file contains malformed input, the script will go to the default starter word
