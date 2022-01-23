@@ -25,6 +25,12 @@ This goes on until 6 tries have passed or if the word has been guessed.
 <img src="https://user-images.githubusercontent.com/20371135/150624810-f41a9ae1-ebd7-4a51-9a0a-440872d9a6c4.png" alt="drawing" width="60%"/>
 
 ## Choosing the right word
+This script accepts a text file "starters.txt" of user-input starter words to use in its game. (If "starters.txt" does not exist, then the script will use the default starter word "stare".) This text file is expected to be 5-letter words, one word per line.
+- If multiple starter words are in the text file, the script will choose one at random
+- If file contains malformed input, the script will go to the default starter word
+- If the script encounters a user-input starter word that is not in the Wordle list, it will proceed to try a different word from the text file until all valid words are exhausted.
+- If all the words in the text file happen to not be in Wordle's list of words, the default starter word will be used.
+
 The current scoring system prioritizes the frequency of letters within the word. The more frequent the letter appears in the library, the higher score it gets. The score of a word is merely the sum of the scores of its letter. This strategy was chosen so even if the guessed word was wrong, we can gain more information through whether or not its letters belong in the target word. We will either eliminate many words that the "common" letters appear in, or experience a higher probability of 1+ letters to be in the target word due to how "common" the letters are.
 
 After words are scored and ranked based on the aforementioned system, words are chosen only if they fit a specific pattern. At the start of the game, the pattern is merely 5 letters from a-z. However, as we gain more knowledge from each guess, the pattern changes accordingly.
@@ -35,5 +41,4 @@ After words are scored and ranked based on the aforementioned system, words are 
 (open to criticism for improvements)
 
 ## Dependencies
-- [geckodriver](https://github.com/mozilla/geckodriver/releases)
 - FireFox (browser)
