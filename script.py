@@ -1,4 +1,4 @@
-# import chromedriver_autoinstaller
+import chromedriver_autoinstaller
 from english_words import english_words_lower_alpha_set
 import re
 from os.path import exists
@@ -169,23 +169,20 @@ def gen_site_globals():
 # Connect with webpage
 def connect_site():
 
-    s = Service(r'geckodriver.exe')
-    driver = webdriver.Firefox(service=s)
-
-    # # support 3 browsers
-    # driver = None
-    # try:
-    #     s = Service(r'geckodriver.exe')
-    #     driver = webdriver.Firefox(service=s)
-    # except:
-    #     try:
-    #         chromedriver_autoinstaller.install()
-    #         driver = webdriver.Chrome()
-    #     except:
-    #         try:
-    #             driver = webdriver.Edge('msedgedriver')
-    #         except:
-    #             raise NotImplementedError("This script currently supports only Firefox, Chrome, and Edge.")
+    # support 3 browsers
+    driver = None
+    try:
+        s = Service(r'geckodriver.exe')
+        driver = webdriver.Firefox(service=s)
+    except:
+        try:
+            chromedriver_autoinstaller.install()
+            driver = webdriver.Chrome()
+        except:
+            try:
+                driver = webdriver.Edge('msedgedriver')
+            except:
+                raise NotImplementedError("This script currently supports only Firefox, Chrome, and Edge.")
 
     driver.get("https://www.powerlanguage.co.uk/wordle/")
 
@@ -197,7 +194,8 @@ def connect_site():
     # close instruction pop-up
     time.sleep(1) # delay
     game_app = driver.find_element(By.TAG_NAME, "game-app")
-    game_app.click()
+    game = DRIVER.execute_script('return arguments[0].shadowRoot.children', game_app)[1].find_element(By.ID, "game")
+    game.click()
 
 # Determine if game has been won
 def game_won(try_num):
