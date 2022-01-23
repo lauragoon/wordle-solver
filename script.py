@@ -14,7 +14,19 @@ BOARD_ROWS_TILES = list()
 
 # Keep a set of only 5-letter-ed words
 def gen_words():
-    return set(filter(lambda wrd: len(wrd) == 5 and str.isalpha(wrd), english_words_lower_alpha_set))
+    init_set = set(filter(lambda wrd: len(wrd) == 5 and str.isalpha(wrd), english_words_lower_alpha_set))
+
+    # remove words from non word list if avail
+    if exists("non_word_list.txt"):
+        with open("non_word_list.txt") as file:
+            words = file.readlines()
+            words = [word.rstrip().lower() for word in words]
+
+            # remove starter words that have been tried already in prev games
+            return set(init_set).difference(set(words))
+
+    else:
+        return init_set
 
 # Score words based on frequency of letter appearances
 def map_word_scores(curr_words):
@@ -42,6 +54,13 @@ def map_word_scores(curr_words):
 
 # Get first word from list
 def get_first_word(first_tries):
+    # check to see if non word list avail
+    non_words = set()
+    if exists("non_word_list.txt"):
+        with open("non_word_list.txt") as file:
+            words = file.readlines()
+            words = [word.rstrip().lower() for word in words]
+            non_words = set(words)
 
     # check if start words file exists
     if exists("starters.txt"):
@@ -53,7 +72,7 @@ def get_first_word(first_tries):
             words = list(set(words).difference(first_tries))
             
             # only one word to choose from
-            if len(words) == 1 and len(words[0]) == 5 and words[0].isalpha():
+            if len(words) == 1 and len(words[0]) == 5 and words[0].isalpha() and words[0] not in non_words:
                 return words[0]
 
             # choose random word from list of starters
@@ -61,7 +80,7 @@ def get_first_word(first_tries):
                 while len(words) > 0:
                     chosen_starter = random.choice(words)
                     # check validity of word
-                    if len(chosen_starter) == 5 and chosen_starter.isalpha():
+                    if len(chosen_starter) == 5 and chosen_starter.isalpha() and chosen_starter not in non_words:
                         return chosen_starter
                     else:
                         words.remove(chosen_starter)
@@ -280,7 +299,7 @@ def update_yellows(yellows, yellow_feedback):
     return yellows
 
 # Run helper functions in order
-def run_script():
+def run_script(refine_word_list=False):
 
     # pre-game prep
     curr_words = gen_words()
@@ -296,6 +315,9 @@ def run_script():
     yellows = {} # int : set(str)
     greys = set()
     first_tries = set()
+
+    if refine_word_list:
+        word_file = open("non_word_list.txt", "a")
 
     while not has_game_finished: # 6 tries
         feedback_regex = gen_regex(greens, yellows, greys)
@@ -319,7 +341,11 @@ def run_script():
                 # if used input starter words, mark it to not try again
                 if try_num == 1:
                     first_tries.add(now_word)
-                for i in range(5): # delete last word
+                # mark word to not be used in future games
+                if refine_word_list:
+                    word_file.write('\n' + now_word)
+                # delete last word
+                for i in range(5):
                     type_keyboard("BACKSPACE")
             else:
                 feedback = get_feedback(try_num)
@@ -330,5 +356,8 @@ def run_script():
 
             if try_num == 7: # finished try 6
                 has_game_finished = True
+
+    if refine_word_list:
+        word_file.close()
 
 run_script()
