@@ -1,7 +1,7 @@
 # Wordle Solver
 Script that can *theoretically* solve a game of Wordle. Uses statistical letter frequency and previous rows' colored tiles to grab words from english-words-py library.
 
-A zip folder containing the browser dependencies & executable script can be found under [Releases](https://github.com/lauragoon/wordle-solver/releases).
+A zip folder containing the executable script can be found under [Releases](https://github.com/lauragoon/wordle-solver/releases).
 
 ## Running the script
 ### What happens
