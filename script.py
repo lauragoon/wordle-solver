@@ -1,3 +1,4 @@
+import chromedriver_autoinstaller
 from english_words import english_words_lower_alpha_set
 import re
 from selenium import webdriver
@@ -117,8 +118,25 @@ def gen_site_globals():
 
 # Connect with webpage
 def connect_site():
+
     s = Service(r'geckodriver.exe')
     driver = webdriver.Firefox(service=s)
+
+    # # support 3 browsers
+    # driver = None
+    # try:
+    #     s = Service(r'geckodriver.exe')
+    #     driver = webdriver.Firefox(service=s)
+    # except:
+    #     try:
+    #         chromedriver_autoinstaller.install()
+    #         driver = webdriver.Chrome()
+    #     except:
+    #         try:
+    #             driver = webdriver.Edge('msedgedriver')
+    #         except:
+    #             raise NotImplementedError("This script currently supports only Firefox, Chrome, and Edge.")
+
     driver.get("https://www.powerlanguage.co.uk/wordle/")
 
     global DRIVER
