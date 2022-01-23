@@ -1,6 +1,8 @@
-import chromedriver_autoinstaller
+# import chromedriver_autoinstaller
 from english_words import english_words_lower_alpha_set
 import re
+from os.path import exists
+import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
@@ -37,6 +39,35 @@ def map_word_scores(curr_words):
             word_scores[wrd] += letter_score[chr]
 
     return word_scores
+
+# Get first word from list
+def get_first_word(first_tries):
+
+    # check if start words file exists
+    if exists("starters.txt"):
+        with open("starters.txt") as file:
+            words = file.readlines()
+            words = [word.rstrip().lower() for word in words]
+
+            # remove starter words that have been tried already in this game
+            words = list(set(words).difference(first_tries))
+            
+            # only one word to choose from
+            if len(words) == 1 and len(words[0]) == 5 and words[0].isalpha():
+                return words[0]
+
+            # choose random word from list of starters
+            elif len(words) > 1:
+                while len(words) > 0:
+                    chosen_starter = random.choice(words)
+                    # check validity of word
+                    if len(chosen_starter) == 5 and chosen_starter.isalpha():
+                        return chosen_starter
+                    else:
+                        words.remove(chosen_starter)
+    
+    # no valid starter word, go with a default
+    return "stare"
 
 # Get word with highest score with given conditions
 def next_word(word_scores, feedback_regex, yellows):
@@ -264,11 +295,16 @@ def run_script():
     greens = {} # int : str
     yellows = {} # int : set(str)
     greys = set()
+    first_tries = set()
 
     while not has_game_finished: # 6 tries
         feedback_regex = gen_regex(greens, yellows, greys)
         yellow_chrs = yellows.values()
-        now_word = next_word(word_scores, feedback_regex, set().union(*yellow_chrs))
+
+        if try_num == 1:
+            now_word = get_first_word(first_tries)
+        else:
+            now_word = next_word(word_scores, feedback_regex, set().union(*yellow_chrs))
         type_word(now_word)
 
         time.sleep(1.7) # delay so row is updated with feedback before we check
@@ -280,6 +316,9 @@ def run_script():
         # need to continue the game
         else:
             if word_not_in_list(try_num):
+                # if used input starter words, mark it to not try again
+                if try_num == 1:
+                    first_tries.add(now_word)
                 for i in range(5): # delete last word
                     type_keyboard("BACKSPACE")
             else:
