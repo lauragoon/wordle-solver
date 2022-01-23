@@ -1,7 +1,7 @@
 # Wordle Solver
 Script that can *theoretically* solve a game of Wordle. Uses statistical letter frequency and previous rows' colored tiles to grab words from english-words-py library.
 
-A zip folder containing the geckodriver dependency & executable script can be found under [Releases](https://github.com/lauragoon/wordle-solver/releases).
+A zip folder containing the browser dependencies (v1.1) & executable script can be found under [Releases](https://github.com/lauragoon/wordle-solver/releases).
 
 ## Running the script
 ### What happens
@@ -50,4 +50,4 @@ After words are scored and ranked based on the aforementioned system, words are 
 (open to criticism for improvements)
 
 ## Dependencies
-- FireFox (browser)
+- FireFox, Chrome, or Edge
