@@ -1,136 +1,14 @@
 import chromedriver_autoinstaller
-from english_words import english_words_lower_alpha_set
-import re
-from os.path import exists
-import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 import time
 
+from word_logic import gen_words, map_word_scores, get_first_word, next_word, gen_regex, update_greens, update_yellows
+
 DRIVER = None
 KEYBOARD_ROWS_TILES = list()
 BOARD_ROWS_TILES = list()
-
-# Keep a set of only 5-letter-ed words
-def gen_words():
-    init_set = set(filter(lambda wrd: len(wrd) == 5 and str.isalpha(wrd), english_words_lower_alpha_set))
-
-    # remove words from non word list if avail
-    if exists("non_word_list.txt"):
-        with open("non_word_list.txt") as file:
-            words = file.readlines()
-            words = [word.rstrip().lower() for word in words]
-
-            # remove starter words that have been tried already in prev games
-            return set(init_set).difference(set(words))
-
-    else:
-        return init_set
-
-# Score words based on frequency of letter appearances
-def map_word_scores(curr_words):
-    alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-
-    # letter frequency mapping
-    letter_score = {}
-    for i in range(26):
-        letter_score[alphabet[i]] = 0
-
-    for wrd in curr_words:
-            wrd_split = list(wrd)
-            for chr in wrd_split:
-                letter_score[chr] += 1
-
-    # word frequency mapping
-    word_scores = {}
-    for wrd in curr_words:
-        word_scores[wrd] = 0
-        wrd_split = list(wrd)
-        for chr in wrd_split:
-            word_scores[wrd] += letter_score[chr]
-
-    return word_scores
-
-# Get first word from list
-def get_first_word(first_tries):
-    # check to see if non word list avail
-    non_words = set()
-    if exists("non_word_list.txt"):
-        with open("non_word_list.txt") as file:
-            words = file.readlines()
-            words = [word.rstrip().lower() for word in words]
-            non_words = set(words)
-
-    # check if start words file exists
-    if exists("starters.txt"):
-        with open("starters.txt") as file:
-            words = file.readlines()
-            words = [word.rstrip().lower() for word in words]
-
-            # remove starter words that have been tried already in this game
-            words = list(set(words).difference(first_tries))
-            
-            # only one word to choose from
-            if len(words) == 1 and len(words[0]) == 5 and words[0].isalpha() and words[0] not in non_words:
-                return words[0]
-
-            # choose random word from list of starters
-            elif len(words) > 1:
-                while len(words) > 0:
-                    chosen_starter = random.choice(words)
-                    # check validity of word
-                    if len(chosen_starter) == 5 and chosen_starter.isalpha() and chosen_starter not in non_words:
-                        return chosen_starter
-                    else:
-                        words.remove(chosen_starter)
-    
-    # no valid starter word, go with a default
-    return "stare"
-
-# Get word with highest score with given conditions
-def next_word(word_scores, feedback_regex, yellows):
-    found_word = False
-    ret_word = ""
-
-    while not found_word:
-
-        # get next highest scoring word
-        curr_word = max(word_scores.items(), key=lambda tup: tup[1])[0]
-
-        # check if word matches against regex from past feedback
-        # also checks if word contains the yellow characters; yellow chars are filtered out of their original index position via the regex
-        if bool(re.match(feedback_regex, curr_word)) and len(set(curr_word).intersection(yellows)) == len(yellows):
-            ret_word = curr_word
-            found_word = True
-
-        # words that don't pass the check don't need to stay in word list anymore
-        else:
-            del word_scores[curr_word]
-
-    # delete currently guessed word so we don't guess it again
-    del word_scores[ret_word]
-
-    return ret_word
-
-# Type on webpage keyboard
-def type_keyboard(click_key):
-    key_map = {"q":(0,0), "w":(0,1), "e":(0,2), "r":(0,3), "t":(0,4), "y":(0,5), "u":(0,6), "i":(0,7), "o":(0,8), "p":(0,9),
-               "a":(1,0), "s":(1,1), "d":(1,2), "f":(1,3), "g":(1,4), "h":(1,5), "j":(1,6), "k":(1,7), "l":(1,8),
-               "z":(2,1), "x":(2,2), "c":(2,3), "v":(2,4), "b":(2,5), "n":(2,6), "m":(2,7),
-               "ENTER":(2,0), "BACKSPACE":(2,8)}
-
-    keyboard_location = key_map[click_key]
-    KEYBOARD_ROWS_TILES[keyboard_location[0]][keyboard_location[1]].click()
-
-# Type word on keyboard
-def type_word(wrd):
-    chrs = list(wrd)
-    
-    for chr in chrs:
-        type_keyboard(chr)
-
-    type_keyboard("ENTER")
 
 # Keep track of global variables used to interact with webpage
 def gen_site_globals():
@@ -197,25 +75,24 @@ def connect_site():
     game = DRIVER.execute_script('return arguments[0].shadowRoot.children', game_app)[1].find_element(By.ID, "game")
     game.click()
 
-# Determine if game has been won
-def game_won(try_num):
-    recent_board_row = BOARD_ROWS_TILES[try_num-1]
-    correct_so_far = True
+# Type on webpage keyboard
+def type_keyboard(click_key):
+    key_map = {"q":(0,0), "w":(0,1), "e":(0,2), "r":(0,3), "t":(0,4), "y":(0,5), "u":(0,6), "i":(0,7), "o":(0,8), "p":(0,9),
+               "a":(1,0), "s":(1,1), "d":(1,2), "f":(1,3), "g":(1,4), "h":(1,5), "j":(1,6), "k":(1,7), "l":(1,8),
+               "z":(2,1), "x":(2,2), "c":(2,3), "v":(2,4), "b":(2,5), "n":(2,6), "m":(2,7),
+               "ENTER":(2,0), "BACKSPACE":(2,8)}
 
-    for i in range(5):
-        curr_tile = recent_board_row[i]
-        curr_tile_div = DRIVER.execute_script('return arguments[0].shadowRoot.children', curr_tile)[1]
-        correct_so_far = correct_so_far and curr_tile_div.get_attribute("data-state") == "correct"
+    keyboard_location = key_map[click_key]
+    KEYBOARD_ROWS_TILES[keyboard_location[0]][keyboard_location[1]].click()
 
-    return correct_so_far
+# Type word on keyboard
+def type_word(wrd):
+    chrs = list(wrd)
+    
+    for chr in chrs:
+        type_keyboard(chr)
 
-# Checker for when word is not in list
-def word_not_in_list(try_num):
-    recent_board_row = BOARD_ROWS_TILES[try_num-1]
-    last_tile = recent_board_row[-1]
-    last_tile_div = DRIVER.execute_script('return arguments[0].shadowRoot.children', last_tile)[1]
-
-    return last_tile_div.get_attribute("data-state") == "tbd"
+    type_keyboard("ENTER")
 
 # Get feedback from previous try
 def get_feedback(try_num):
@@ -248,59 +125,25 @@ def get_feedback(try_num):
 
     return feedback_map
 
-# Generate the regex based on feedback of letters
-def gen_regex(greens, yellows, greys):
-    ret_regex = ["","","","",""]
+# Checker for when word is not in list
+def word_not_in_list(try_num):
+    recent_board_row = BOARD_ROWS_TILES[try_num-1]
+    last_tile = recent_board_row[-1]
+    last_tile_div = DRIVER.execute_script('return arguments[0].shadowRoot.children', last_tile)[1]
 
-    # fill in correct letters
-    for itm in greens.items():
-        idx = itm[0]
-        letter = itm[1]
-        ret_regex[idx] = "(?:[" + letter + "])"
-    
-    # fill in rest
+    return last_tile_div.get_attribute("data-state") == "tbd"
+
+# Determine if game has been won
+def game_won(try_num):
+    recent_board_row = BOARD_ROWS_TILES[try_num-1]
+    correct_so_far = True
+
     for i in range(5):
+        curr_tile = recent_board_row[i]
+        curr_tile_div = DRIVER.execute_script('return arguments[0].shadowRoot.children', curr_tile)[1]
+        correct_so_far = correct_so_far and curr_tile_div.get_attribute("data-state") == "correct"
 
-        # not found correct letter for this idx yet
-        if len(ret_regex[i]) == 0:
-
-            dont_include = set()
-            dont_include.update(greys)
-
-            if i in yellows.keys():
-                letters = yellows[i]
-                dont_include.update(letters)
-
-            if len(dont_include) > 0:
-                dont_include_letters = "".join(dont_include)
-                ret_regex[i] = "(?:(?![" + dont_include_letters + "])[a-z])"
-            else:
-                ret_regex[i] = "(?:[a-z])"
-
-    return "".join(ret_regex)
-
-# Update data structure for greens/corrects
-def update_greens(greens, green_feedback):
-    for itm in green_feedback.items():
-        idx = itm[0]
-        letter = itm[1]
-
-        if idx not in greens.keys():
-            greens[idx] = letter
-
-    return greens
-
-# Update data structure for yellows/presents
-def update_yellows(yellows, yellow_feedback):
-    for itm in yellow_feedback.items():
-        idx = itm[0]
-        letter = itm[1]
-
-        if idx not in yellows.keys():
-            yellows[idx] = set()
-        yellows[idx].add(letter)
-
-    return yellows
+    return correct_so_far
 
 # Run helper functions in order
 def run_script(refine_word_list=False):
