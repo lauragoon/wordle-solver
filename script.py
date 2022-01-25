@@ -221,6 +221,7 @@ def word_not_in_list(try_num):
 def get_feedback(try_num):
     recent_board_row = BOARD_ROWS_TILES[try_num-1]
     feedback_map = {"green":{}, "yellow":{}, "grey":set()}
+    maybe_greys = set()
 
     for i in range(5):
         curr_tile = recent_board_row[i]
@@ -232,13 +233,18 @@ def get_feedback(try_num):
         elif curr_tile_state == "present":
             feedback_map["yellow"][i] = curr_tile.get_attribute("letter")
         elif curr_tile_state == "absent":
-            feedback_map["grey"].add(curr_tile.get_attribute("letter"))
+            maybe_greys.add(curr_tile.get_attribute("letter"))
         elif curr_tile_state == "empty":
             raise ReferenceError("Empty tile")
         elif curr_tile_state == "tbd":
             raise ReferenceError("TBD tile")
         else:
             raise ReferenceError("Encountered weird tile state")
+
+    # only add letter to greys if not already counted in green and yellow
+    for maybe_grey in maybe_greys:
+        if maybe_grey not in feedback_map["green"].values() and maybe_grey not in feedback_map["yellow"].values():
+            feedback_map["grey"].add(maybe_grey)
 
     return feedback_map
 
