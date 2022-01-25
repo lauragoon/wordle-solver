@@ -164,7 +164,7 @@ def run_script(refine_word_list=False):
     first_tries = set()
 
     if refine_word_list:
-        word_file = open("non_word_list.txt", "a")
+        word_file = open("nonwords.txt", "a")
 
     while not has_game_finished: # 6 tries
         feedback_regex = gen_regex(greens, yellows, greys)

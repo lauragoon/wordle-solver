@@ -8,8 +8,8 @@ def gen_words():
     init_set = set(filter(lambda wrd: len(wrd) == 5 and str.isalpha(wrd), english_words_lower_alpha_set))
 
     # remove words from non word list if avail
-    if exists("non_word_list.txt"):
-        with open("non_word_list.txt") as file:
+    if exists("nonwords.txt"):
+        with open("nonwords.txt") as file:
             words = file.readlines()
             words = [word.rstrip().lower() for word in words]
 
@@ -47,8 +47,8 @@ def map_word_scores(curr_words):
 def get_first_word(first_tries):
     # check to see if non word list avail
     non_words = set()
-    if exists("non_word_list.txt"):
-        with open("non_word_list.txt") as file:
+    if exists("nonwords.txt"):
+        with open("nonwords.txt") as file:
             words = file.readlines()
             words = [word.rstrip().lower() for word in words]
             non_words = set(words)
