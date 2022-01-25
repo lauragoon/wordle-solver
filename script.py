@@ -333,8 +333,7 @@ def run_script(refine_word_list=False):
             now_word = next_word(word_scores, feedback_regex, set().union(*yellow_chrs))
         type_word(now_word)
 
-        # TODO: keep check on this delay
-        time.sleep(1.3) # delay so row is updated with feedback before we check
+        time.sleep(1.5) # delay so row is updated with feedback before we check
 
         # won the game
         if game_won(try_num):
