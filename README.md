@@ -26,11 +26,11 @@ This goes on until 6 tries have passed or if the word has been guessed.
 <img src="https://user-images.githubusercontent.com/20371135/150624810-f41a9ae1-ebd7-4a51-9a0a-440872d9a6c4.png" alt="drawing" width="60%"/>
 
 ### Improving on script's word bank
-This script uses words from the english-words-py library, which does seems to include more words than what are counted as valid words in Wordle's word list. These words are stored in "non_words_list.txt". When generating the word bank and selecting starter words, the script will compare against words in this file (if this file exists) and remove any words that are included in this file. This text file is expected to be 5-letter words, one word per line.
+This script uses words from the english-words-py library, which does seems to include more words than what are counted as valid words in Wordle's word list. These words are stored in "nonwords.txt". When generating the word bank and selecting starter words, the script will compare against words in this file (if this file exists) and remove any words that are included in this file. This text file is expected to be 5-letter words, one word per line.
 
 While there is a short file included as an example, there is an option to iteratively add words onto this list. If this option is triggered:
-- A new file "non_words_list.txt" is created (if it does not already exist)
-- Whenever a word is found to not be in the Wordle list, that word will be written on a new line in "non_words_list.txt"
+- A new file "nonwords.txt" is created (if it does not already exist)
+- Whenever a word is found to not be in the Wordle list, that word will be written on a new line in "nonwords.txt"
   - In the rare case words are duplicated in this file, it does not matter whether or not the user manually deletes the duplicates
 
 ## Choosing the right word
