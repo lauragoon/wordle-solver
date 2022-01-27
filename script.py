@@ -55,7 +55,9 @@ def connect_site():
     except:
         try:
             chromedriver_autoinstaller.install()
-            driver = webdriver.Chrome()
+            chrome_opts = webdriver.ChromeOptions()
+            chrome_opts.add_experimental_option('excludeSwitches', ['enable-logging'])
+            driver = webdriver.Chrome(options=chrome_opts)
         except:
             try:
                 driver = webdriver.Edge('msedgedriver')
