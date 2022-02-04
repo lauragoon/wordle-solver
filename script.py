@@ -1,5 +1,6 @@
 import chromedriver_autoinstaller
 from selenium import webdriver
+from selenium.common.exceptions import SessionNotCreatedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 import time
@@ -49,19 +50,20 @@ def connect_site():
 
     # support 3 browsers
     driver = None
+
     try:
         s = Service(r'geckodriver.exe')
         driver = webdriver.Firefox(service=s)
-    except:
+    except SessionNotCreatedException:
         try:
             chromedriver_autoinstaller.install()
             chrome_opts = webdriver.ChromeOptions()
             chrome_opts.add_experimental_option('excludeSwitches', ['enable-logging'])
             driver = webdriver.Chrome(options=chrome_opts)
-        except:
+        except SessionNotCreatedException:
             try:
                 driver = webdriver.Edge('msedgedriver')
-            except:
+            except SessionNotCreatedException:
                 raise NotImplementedError("This script currently supports only Firefox, Chrome, and Edge.")
 
     driver.get("https://www.powerlanguage.co.uk/wordle/")
