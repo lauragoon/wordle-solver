@@ -1,0 +1,34 @@
+{
+
+    "manifest_version": 2,
+    "name": "Wordle Solver",
+    "version": "1.0",
+  
+    "description": "Theoretically solves a Wordle puzzle.",
+
+    "background": {
+        "scripts": ["background.js"]
+    },
+
+    "permissions": [
+        "tabs"
+    ],    
+  
+    "icons": {
+        "48": "icons/wordle-solver-ext.png"
+    },
+  
+    "content_scripts": [
+        {
+            "matches": ["*://www.nytimes.com/games/wordle/index.html"],
+            "js": ["script.js"]
+        }
+    ],
+
+    "browser_action": {
+        "default_icon": "icons/wordle-solver-ext.png",
+        "default_title": "Wordle Solver"
+    }      
+  
+  }
+  

@@ -51,3 +51,8 @@ After words are scored and ranked based on the aforementioned system, words are 
 
 ## Dependencies
 - FireFox, Chrome, or Edge
+
+
+
+
+Icon by flaticon.com
